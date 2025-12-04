@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tracker App - Template</title>
+    <style>
+      :root {
+        --bg: #050816;
+        --bg-alt: #0f172a;
+        --panel: #020617;
+        --accent: #38bdf8;
+        --accent-soft: rgba(56, 189, 248, 0.16);
+        --accent-strong: #0ea5e9;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --danger: #f97373;
+        --border-subtle: rgba(148, 163, 184, 0.4);
+        --radius-lg: 16px;
+        --radius-md: 10px;
+        --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.85);
+        --shadow-glow: 0 0 40px rgba(56, 189, 248, 0.38);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+          "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top, #1d2438 0, #020617 50%, #020617 100%);
+        color: var(--text);
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        padding: 32px 16px;
+      }
+
+      .app-shell {
+        width: 100%;
+        max-width: 1120px;
+        display: grid;
+        grid-template-columns: minmax(0, 3fr) minmax(0, 2.5fr);
+        gap: 32px;
+        background: radial-gradient(circle at top left, #0f172a 0, #020617 45%, #020617 100%);
+        border-radius: 28px;
+        padding: 24px;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        box-shadow: var(--shadow-soft);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .app-shell::before {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        background:
+          radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.14), transparent 55%),
+          radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.04), transparent 52%);
+        opacity: 0.8;
+        pointer-events: none;
+      }
+
+      .app-shell-inner {
+        position: relative;
+        z-index: 1;
+        display: contents;
+      }
+
+      @media (max-width: 900px) {
+        body {
+          padding: 16px;
+        }
+
+        .app-shell {
+          grid-template-columns: minmax(0, 1fr);
+          padding: 18px;
+          border-radius: 20px;
+        }
+      }
+
+      /* Left: Tracker preview */
+      .preview-column {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .app-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brand-logo {
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        background: radial-gradient(circle at 30% 20%, #e0f2fe 0, #38bdf8 40%, #075985 100%);
+        box-shadow: 0 0 22px rgba(56, 189, 248, 0.7);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .brand-logo::after {
+        content: "";
+        position: absolute;
+        inset: 6px;
+        border-radius: inherit;
+        border: 2px solid rgba(15, 23, 42, 0.5);
+        box-shadow: inset 0 0 16px rgba(15, 23, 42, 0.9);
+      }
+
+      .brand-text-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+      }
+
+      .brand-text-subtitle {
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .app-pill {
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        font-size: 0.7rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--muted);
+        background: linear-gradient(
+          135deg,
+          rgba(15, 23, 42, 0.9),
+          rgba(15, 23, 42, 0.4)
+        );
+      }
+
+      .app-pill-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #22c55e;
+        box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.25);
+      }
+
+      .preview-main {
+        margin-top: 8px;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 16px;
+        padding: 16px;
+        border-radius: 22px;
+        background: radial-gradient(
+            circle at 0 0,
+            rgba(56, 189, 248, 0.1),
+            transparent 50%
+          ),
+          radial-gradient(circle at 100% 0, rgba(8, 47, 73, 0.85), transparent 60%),
+          #020617;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.25);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .preview-main::before {
+        content: "";
+        position: absolute;
+        inset: -20%;
+        background: radial-gradient(
+          circle at 10% 0,
+          rgba(56, 189, 248, 0.2),
+          transparent 45%
+        );
+        opacity: 0.65;
+        pointer-events: none;
+      }
+
+      .preview-main-inner {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 16px;
+      }
+
+      .preview-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .preview-title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .preview-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .preview-title-badge {
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(56, 189, 248, 0.6);
+        background: rgba(15, 23, 42, 0.9);
+        color: var(--accent);
+        font-size: 0.7rem;
+      }
+
+      .preview-caption {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .preview-quick-stats {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .chip {
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        background: rgba(15, 23, 42, 0.9);
+        font-size: 0.75rem;
+        color: var(--muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .chip-strong {
+        border-color: rgba(56, 189, 248, 0.7);
+        background: linear-gradient(
+          135deg,
+          rgba(15, 23, 42, 0.9),
+          rgba(8, 47, 73, 0.9)
+        );
+        color: var(--accent);
+      }
+
+      .chip-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--accent);
+        box-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+      }
+
+      .preview-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 3fr) minmax(0, 2.2fr);
+        gap: 14px;
+        align-items: stretch;
+      }
+
+      @media (max-width: 900px) {
+        .preview-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+
+      .panel {
+        background: radial-gradient(
+            circle at 0 0,
+            rgba(15, 23, 42, 0.85),
+            rgba(15, 23, 42, 0.98)
+          ),
+          #020617;
+        border-radius: 16px;
+        padding: 12px 12px 10px;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.95);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .panel-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .panel-title {
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .panel-title-pill {
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        color: var(--muted);
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.4);
+      }
+
+      .panel-header-cta {
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        color: var(--accent);
+        border: 1px dashed rgba(56, 189, 248, 0.6);
+        background: rgba(15, 23, 42, 0.9);
+      }
+
+      .panel-subtitle {
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      .tracker-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+      }
+
+      .tracker-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1.7fr) repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        align-items: center;
+        padding: 8px 9px;
+        border-radius: 999px;
+        background: radial-gradient(
+            circle at 0 0,
+            rgba(30, 64, 175, 0.34),
+            transparent 60%
+          ),
+          rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(30, 64, 175, 0.9);
+        box-shadow: 0 12px 25px rgba(15, 23, 42, 0.95);
+        font-size: 0.78rem;
+      }
+
+      .tracker-row.secondary {
+        border-color: rgba(148, 163, 184, 0.4);
+        background: rgba(15, 23, 42, 0.96);
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.95);
+      }
+
+      .tracker-name {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tracker-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 999px;
+        background: var(--accent);
+        box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+      }
+
+      .tracker-name-main {
+        font-weight: 500;
+      }
+
+      .tracker-name-sub {
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
+
+      .tracker-pill,
+      .tracker-value {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3px 8px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        color: var(--muted);
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.5);
+      }
+
+      .tracker-value.strong {
+        color: var(--accent);
+        border-color: rgba(56, 189, 248, 0.8);
+      }
+
+      .tracker-status-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        color: #22c55e;
+        background: rgba(22, 101, 52, 0.25);
+        border: 1px solid rgba(34, 197, 94, 0.8);
+        box-shadow: 0 0 3px rgba(34, 197, 94, 0.8);
+      }
+
+      .tracker-status-pill.paused {
+        color: #eab308;
+        background: rgba(120, 53, 15, 0.32);
+        border-color: rgba(234, 179, 8, 0.9);
+        box-shadow: 0 0 3px rgba(234, 179, 8, 0.85);
+      }
+
+      .placeholder-chart {
+        flex: 1;
+        border-radius: 12px;
+        border: 1px dashed rgba(148, 163, 184, 0.5);
+        background: radial-gradient(
+            circle at 0 0,
+            rgba(148, 163, 184, 0.2),
+            transparent 50%
+          ),
+          rgba(15, 23, 42, 0.95);
+        padding: 8px 10px;
+        display: grid;
+        align-items: stretch;
+      }
+
+      .placeholder-chart-inner {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        gap: 8px;
+      }
+
+      .placeholder-chart-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .placeholder-chart-title {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .placeholder-chart-legend {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
+
+      .legend-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--accent);
+      }
+
+      .placeholder-chart-bars {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        align-items: flex-end;
+        gap: 5px;
+      }
+
+      .chart-bar {
+        border-radius: 6px 6px 2px 2px;
+        background: linear-gradient(
+          to top,
+          rgba(15, 23, 42, 1),
+          rgba(56, 189, 248, 0.2)
+        );
+        border: 1px solid rgba(56, 189, 248, 0.5);
+        box-shadow: 0 8px 15px rgba(15, 23, 42, 0.9);
+      }
+
+      .chart-bar[data-level="1"] {
+        height: 15%;
+      }
+      .chart-bar[data-level="2"] {
+        height: 30%;
+      }
+      .chart-bar[data-level="3"] {
+        height: 45%;
+      }
+      .chart-bar[data-level="4"] {
+        height: 60%;
+      }
+      .chart-bar[data-level="5"] {
+        height: 75%;
+      }
+      .chart-bar[data-level="6"] {
+        height: 90%;
+      }
+
+      .preview-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 0.75rem;
+        color: var(--muted);
+        flex-wrap: wrap;
+      }
+
+      .preview-footer span strong {
+        color: var(--accent);
+      }
+
+      /* Right: Auth + tracker controls */
+      .auth-column {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .auth-card {
+        background: radial-gradient(
+            circle at 80% 0,
+            rgba(56, 189, 248, 0.2),
+            transparent 55%
+          ),
+          rgba(15, 23, 42, 0.98);
+        border-radius: 20px;
+        padding: 18px 18px 16px;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.96);
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .auth-pill {
+        align-self: flex-start;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        color: var(--muted);
+        background: rgba(15, 23, 42, 0.98);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .auth-pill-icon {
+        width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        background: radial-gradient(circle at 30% 15%, #e0f2fe, #38bdf8 50%, #0369a1 100%);
+        box-shadow: 0 0 16px rgba(56, 189, 248, 0.9);
+      }
+
+      .auth-title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .auth-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+      }
+
+      .auth-subtitle {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+
+      .auth-tabs {
+        display: inline-flex;
+        align-self: flex-start;
+        padding: 3px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        background: rgba(15, 23, 42, 0.9);
+        position: relative;
+      }
+
+      .auth-tab {
+        position: relative;
+        z-index: 1;
+        border: none;
+        background: none;
+        color: var(--muted);
+        font-size: 0.78rem;
+        padding: 6px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: color 0.18s ease;
+      }
+
+      .auth-tab.active {
+        color: var(--text);
+      }
+
+      .auth-tab-highlight {
+        position: absolute;
+        top: 3px;
+        bottom: 3px;
+        width: calc(50% - 6px);
+        border-radius: 999px;
+        background: linear-gradient(
+          135deg,
+          rgba(15, 23, 42, 1),
+          rgba(56, 189, 248, 0.18)
+        );
+        border: 1px solid rgba(56, 189, 248, 0.8);
+        box-shadow: var(--shadow-glow);
+        transition: transform 0.22s ease-out;
+      }
+
+      .auth-tab-highlight[data-mode="signup"] {
+        transform: translateX(0);
+      }
+
+      .auth-tab-highlight[data-mode="login"] {
+        transform: translateX(100%);
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 4px;
+      }
+
+      label {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-bottom: 3px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .input-shell {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .input-shell input {
+        width: 100%;
+        padding: 9px 10px 9px 34px;
+        border-radius: 10px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        background: radial-gradient(circle at 0 0, #020617, #020617);
+        color: var(--text);
+        font-size: 0.85rem;
+        outline: none;
+        box-shadow: 0 0 0 1px rgba(15, 23, 42, 1);
+      }
+
+      .input-shell input::placeholder {
+        color: #6b7280;
+      }
+
+      .input-shell input:focus {
+        border-color: rgba(56, 189, 248, 0.9);
+        box-shadow:
+          0 0 0 1px rgba(15, 23, 42, 1),
+          0 0 0 1px rgba(56, 189, 248, 0.8),
+          0 0 20px rgba(56, 189, 248, 0.45);
+      }
+
+      .input-icon {
+        position: absolute;
+        left: 10px;
+        width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.8);
+        box-shadow: inset 0 0 10px rgba(15, 23, 42, 1);
+      }
+
+      .input-description {
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
+
+      .field-inline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      .checkbox-row {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .checkbox-row input[type="checkbox"] {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+        border: 1px solid rgba(148, 163, 184, 0.9);
+        background: transparent;
+        accent-color: var(--accent-strong);
+      }
+
+      .link {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .link:hover {
+        text-decoration: underline;
+      }
+
+      .primary-button {
+        margin-top: 4px;
+        padding: 9px 12px;
+        border-radius: 999px;
+        border: none;
+        background: radial-gradient(
+            circle at 0 0,
+            rgba(248, 250, 252, 0.28),
+            transparent 40%
+          ),
+          linear-gradient(135deg, #0ea5e9, #0369a1);
+        color: #f9fafb;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow:
+          0 10px 30px rgba(15, 23, 42, 0.9),
+          0 0 30px rgba(56, 189, 248, 0.7);
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease,
+          filter 0.12s ease;
+      }
+
+      .primary-button:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.03);
+        box-shadow:
+          0 16px 40px rgba(15, 23, 42, 0.95),
+          0 0 35px rgba(56, 189, 248, 0.8);
+      }
+
+      .primary-button:active {
+        transform: translateY(0);
+        box-shadow:
+          0 8px 24px rgba(15, 23, 42, 0.95),
+          0 0 22px rgba(56, 189, 248, 0.75);
+      }
+
+      .primary-button span {
+        font-size: 0.8rem;
+        color: rgba(15, 23, 42, 0.12);
+        background: rgba(248, 250, 252, 0.9);
+        padding: 1px 8px;
+        border-radius: 999px;
+      }
+
+      .microcopy {
+        font-size: 0.72rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      .microcopy strong {
+        color: var(--accent);
+      }
+
+      .divider {
+        height: 1px;
+        background: radial-gradient(
+            circle at 0 0,
+            rgba(148, 163, 184, 0.7),
+            transparent 60%
+          ),
+          rgba(15, 23, 42, 1);
+        opacity: 0.85;
+      }
+
+      .quick-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 0.7rem;
+        color: var(--muted);
+        flex-wrap: wrap;
+      }
+
+      .badge {
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        background: rgba(15, 23, 42, 1);
+      }
+
+      .auth-messages {
+        min-height: 18px;
+        font-size: 0.75rem;
+      }
+
+      .auth-messages.error {
+        color: var(--danger);
+      }
+
+      .auth-messages.success {
+        color: #4ade80;
+      }
+
+      /* Tracker controls card */
+      .trackers-card {
+        background: radial-gradient(
+            circle at 0 0,
+            rgba(56, 189, 248, 0.25),
+            transparent 55%
+          ),
+          rgba(15, 23, 42, 0.98);
+        border-radius: 18px;
+        padding: 14px 16px 12px;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.96);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        font-size: 0.78rem;
+      }
+
+      .trackers-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .trackers-title-group {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .trackers-title {
+        font-size: 0.86rem;
+        font-weight: 500;
+      }
+
+      .trackers-subtitle {
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      .pill-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .mini-pill {
+        padding: 2px 7px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        background: rgba(15, 23, 42, 1);
+        color: var(--muted);
+        font-size: 0.68rem;
+      }
+
+      .pill-accent {
+        border-color: rgba(56, 189, 248, 0.8);
+        color: var(--accent);
+      }
+
+      .trackers-form-row {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
+        gap: 8px;
+      }
+
+      @media (max-width: 900px) {
+        .trackers-form-row {
+          grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+        }
+
+        .trackers-form-row button {
+          grid-column: 1 / -1;
+        }
+      }
+
+      .input-compact {
+        width: 100%;
+        padding: 7px 9px;
+        border-radius: 10px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        background: radial-gradient(circle at 0 0, #020617, #020617);
+        color: var(--text);
+        font-size: 0.8rem;
+        outline: none;
+      }
+
+      .input-compact::placeholder {
+        color: #6b7280;
+      }
+
+      .input-compact:focus {
+        border-color: rgba(56, 189, 248, 0.9);
+        box-shadow:
+          0 0 0 1px rgba(15, 23, 42, 1),
+          0 0 0 1px rgba(56, 189, 248, 0.8),
+          0 0 18px rgba(56, 189, 248, 0.45);
+      }
+
+      .button-ghost {
+        padding: 7px 12px;
+        border-radius: 999px;
+        border: 1px dashed rgba(56, 189, 248, 0.7);
+        color: var(--accent);
+        background: rgba(15, 23, 42, 0.98);
+        font-size: 0.78rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+      }
+
+      .button-ghost:hover {
+        background: rgba(15, 23, 42, 1);
+      }
+
+      .tiny-text {
+        font-size: 0.68rem;
+        color: var(--muted);
+      }
+
+      .tracker-preview-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 4px;
+      }
+
+      .avatar-stack {
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .avatar {
+        width: 18px;
+        height: 18px;
+        border-radius: 999px;
+        border: 1px solid rgba(15, 23, 42, 1);
+        background: radial-gradient(circle at 30% 15%, #e0f2fe, #38bdf8 50%, #0369a1 100%);
+        box-shadow: 0 0 12px rgba(56, 189, 248, 0.8);
+        margin-left: -6px;
+      }
+
+      .avatar:first-child {
+        margin-left: 0;
+      }
+
+      .avatar.count {
+        background: rgba(15, 23, 42, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app-shell">
+      <div class="app-shell-inner">
+        <!-- Left: Tracker preview UI -->
+        <section class="preview-column" aria-label="Tracker preview">
+          <header class="app-header">
+            <div class="brand">
+              <div class="brand-logo" aria-hidden="true"></div>
+              <div>
+                <div class="brand-text-title">Nebula Tracker</div>
+                <div class="brand-text-subtitle">Personal metrics dashboard</div>
+              </div>
+            </div>
+            <div class="app-pill">
+              <span class="app-pill-dot"></span>
+              Live demo data
+            </div>
+          </header>
+
+          <section class="preview-main">
+            <div class="preview-main-inner">
+              <header class="preview-header">
+                <div class="preview-title-block">
+                  <h1 class="preview-title">
+                    This week’s snapshot
+                    <span class="preview-title-badge">Template view</span>
+                  </h1>
+                  <p class="preview-caption">
+                    A compact example of how your tracker dashboard might look once you
+                    hook it up to real data.
+                  </p>
+                </div>
+                <div class="preview-quick-stats">
+                  <div class="chip chip-strong">
+                    <span class="chip-dot" aria-hidden="true"></span>
+                    4 active trackers
+                  </div>
+                  <div class="chip">12 entries today</div>
+                </div>
+              </header>
+
+              <div class="preview-grid">
+                <article class="panel" aria-label="Tracker list">
+                  <div class="panel-header-row">
+                    <div class="panel-title">
+                      Trackers
+                      <span class="panel-title-pill">Inline preview</span>
+                    </div>
+                    <button type="button" class="panel-header-cta">
+                      + Add new
+                    </button>
+                  </div>
+                  <p class="panel-subtitle">
+                    This section shows how multiple trackers and their current stats might
+                    be displayed.
+                  </p>
+
+                  <ul class="tracker-list">
+                    <li class="tracker-row">
+                      <div class="tracker-name">
+                        <span class="tracker-dot" aria-hidden="true"></span>
+                        <div>
+                          <div class="tracker-name-main">Deep Work Hours</div>
+                          <div class="tracker-name-sub">Focus · per day</div>
+                        </div>
+                      </div>
+                      <div class="tracker-pill">Goal: 3h</div>
+                      <div class="tracker-value strong">2.4h today</div>
+                      <div class="tracker-status-pill">On track</div>
+                    </li>
+
+                    <li class="tracker-row secondary">
+                      <div class="tracker-name">
+                        <span class="tracker-dot" aria-hidden="true"></span>
+                        <div>
+                          <div class="tracker-name-main">Steps</div>
+                          <div class="tracker-name-sub">Health · per day</div>
+                        </div>
+                      </div>
+                      <div class="tracker-pill">Goal: 8k</div>
+                      <div class="tracker-value">6,320 today</div>
+                      <div class="tracker-status-pill paused">Almost there</div>
+                    </li>
+
+                    <li class="tracker-row secondary">
+                      <div class="tracker-name">
+                        <span class="tracker-dot" aria-hidden="true"></span>
+                        <div>
+                          <div class="tracker-name-main">Water Intake</div>
+                          <div class="tracker-name-sub">Health · per day</div>
+                        </div>
+                      </div>
+                      <div class="tracker-pill">Goal: 2.5L</div>
+                      <div class="tracker-value">1.3L</div>
+                      <div class="tracker-status-pill">In progress</div>
+                    </li>
+                  </ul>
+                </article>
+
+                <article class="panel" aria-label="Chart preview">
+                  <div class="panel-header-row">
+                    <div class="panel-title">
+                      Weekly pattern
+                      <span class="panel-title-pill">Sample data</span>
+                    </div>
+                    <div class="panel-subtitle">Replace with your own charts later.</div>
+                  </div>
+                  <div class="placeholder-chart">
+                    <div class="placeholder-chart-inner">
+                      <div class="placeholder-chart-header">
+                        <div class="placeholder-chart-title">
+                          Deep Work · last 7 days
+                        </div>
+                        <div class="placeholder-chart-legend">
+                          <span class="legend-dot" aria-hidden="true"></span>
+                          Hours logged
+                        </div>
+                      </div>
+                      <div class="placeholder-chart-bars" aria-hidden="true">
+                        <div class="chart-bar" data-level="2"></div>
+                        <div class="chart-bar" data-level="3"></div>
+                        <div class="chart-bar" data-level="4"></div>
+                        <div class="chart-bar" data-level="1"></div>
+                        <div class="chart-bar" data-level="6"></div>
+                        <div class="chart-bar" data-level="5"></div>
+                        <div class="chart-bar" data-level="3"></div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <footer class="preview-footer">
+                <span>After sign-up, this area can become your personalized overview.</span>
+                <span>
+                  Designed as a **template** – wire it up to any backend or local storage.
+                </span>
+              </footer>
+            </div>
+          </section>
+        </section>
+
+        <!-- Right: Sign up / Log in -->
+        <section class="auth-column" aria-label="Account and tracker controls">
+          <section class="auth-card" aria-label="Account access">
+            <div class="auth-pill">
+              <span class="auth-pill-icon" aria-hidden="true"></span>
+              Auth template · Email + password
+            </div>
+
+            <div class="auth-title-block">
+              <h2 class="auth-title">Create your tracker account</h2>
+              <p class="auth-subtitle">
+                Use this as a starting point for real authentication. Right now, everything
+                runs purely in your browser.
+              </p>
+            </div>
+
+            <div class="auth-tabs" role="tablist" aria-label="Auth mode">
+              <div
+                class="auth-tab-highlight"
+                data-mode="signup"
+                aria-hidden="true"
+              ></div>
+              <button
+                class="auth-tab active"
+                id="tab-signup"
+                role="tab"
+                aria-selected="true"
+                aria-controls="auth-form"
+                data-mode="signup"
+                type="button"
+              >
+                Sign up
+              </button>
+              <button
+                class="auth-tab"
+                id="tab-login"
+                role="tab"
+                aria-selected="false"
+                aria-controls="auth-form"
+                data-mode="login"
+                type="button"
+              >
+                Log in
+              </button>
+            </div>
+
+            <form id="auth-form" autocomplete="on" novalidate>
+              <div class="field">
+                <label for="email">Email address</label>
+                <div class="input-shell">
+                  <span class="input-icon" aria-hidden="true"></span>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                  />
+                </div>
+                <p class="input-description">
+                  We’ll store this locally in your browser in this template. For a real app,
+                  connect this form to your backend.
+                </p>
+              </div>
+
+              <div class="field">
+                <label for="password">Password</label>
+                <div class="input-shell">
+                  <span class="input-icon" aria-hidden="true"></span>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    minlength="6"
+                    placeholder="At least 6 characters"
+                    autocomplete="current-password"
+                  />
+                </div>
+                <p class="input-description">
+                  For demo purposes only – never use this as-is in production without proper
+                  hashing, secure storage, and a real authentication system.
+                </p>
+              </div>
+
+              <div class="field-inline">
+                <label class="checkbox-row">
+                  <input type="checkbox" id="remember" name="remember" checked />
+                  <span>Remember on this device</span>
+                </label>
+                <a href="#" class="link" aria-disabled="true">Forgot password?</a>
+              </div>
+
+              <button type="submit" class="primary-button">
+                <span>●</span>
+                <span id="auth-button-label">Create account</span>
+              </button>
+
+              <p class="microcopy">
+                By continuing, you agree to plug this into your own backend when you’re
+                ready. <strong>Everything here is front-end only.</strong>
+              </p>
+
+              <div
+                id="auth-message"
+                class="auth-messages"
+                aria-live="polite"
+                role="status"
+              ></div>
+            </form>
+
+            <div class="divider" role="separator"></div>
+
+            <div class="quick-meta">
+              <div class="badge">Starter template · Vanilla HTML + CSS + JS</div>
+              <div>Swap styles, hook up requests, and make it yours.</div>
+            </div>
+          </section>
+
+          <section class="trackers-card" aria-label="Tracker controls">
+            <header class="trackers-header">
+              <div class="trackers-title-group">
+                <h3 class="trackers-title">Example tracker creator</h3>
+                <p class="trackers-subtitle">
+                  Use this section as a pattern for adding new trackers after sign-up.
+                </p>
+              </div>
+              <div class="pill-row">
+                <span class="mini-pill pill-accent">Editable template</span>
+                <span class="mini-pill">No database wired up yet</span>
+              </div>
+            </header>
+
+            <div class="trackers-form-row">
+              <input
+                type="text"
+                id="tracker-name"
+                class="input-compact"
+                placeholder="Tracker name (e.g. Reading Minutes)"
+              />
+              <input
+                type="text"
+                id="tracker-target"
+                class="input-compact"
+                placeholder="Daily goal (e.g. 30 min)"
+              />
+              <button type="button" id="add-tracker" class="button-ghost">
+                + Preview tracker
+              </button>
+            </div>
+
+            <p class="tiny-text">
+              In a real app, this would create a new tracker record tied to the logged-in
+              user. Here, it just updates the preview list on the left.
+            </p>
+
+            <div class="tracker-preview-row">
+              <div class="tiny-text">
+                <strong>Hint:</strong> Start with 1–3 key metrics you care about the most.
+              </div>
+              <div class="avatar-stack" aria-hidden="true">
+                <div class="avatar"></div>
+                <div class="avatar"></div>
+                <div class="avatar count">+12</div>
+              </div>
+            </div>
+          </section>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      // Simple, front-end only demo logic.
+      // Replace localStorage with real API calls when integrating a backend.
+
+      const MODE_SIGNUP = "signup";
+      const MODE_LOGIN = "login";
+
+      const modeState = {
+        current: MODE_SIGNUP,
+      };
+
+      const authForm = document.getElementById("auth-form");
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const authMessage = document.getElementById("auth-message");
+      const authButtonLabel = document.getElementById("auth-button-label");
+      const tabHighlight = document.querySelector(".auth-tab-highlight");
+      const tabs = document.querySelectorAll(".auth-tab");
+
+      const trackerNameInput = document.getElementById("tracker-name");
+      const trackerTargetInput = document.getElementById("tracker-target");
+      const addTrackerButton = document.getElementById("add-tracker");
+
+      const trackerList = document.querySelector(".tracker-list");
+
+      function setMode(mode) {
+        modeState.current = mode;
+
+        tabs.forEach((tab) => {
+          const isActive = tab.dataset.mode === mode;
+          tab.classList.toggle("active", isActive);
+          tab.setAttribute("aria-selected", String(isActive));
+        });
+
+        if (tabHighlight) {
+          tabHighlight.setAttribute("data-mode", mode);
+        }
+
+        if (mode === MODE_SIGNUP) {
+          authButtonLabel.textContent = "Create account";
+          authMessage.textContent =
+            "New here? Create a local demo account using just email and password.";
+          authMessage.className = "auth-messages";
+        } else {
+          authButtonLabel.textContent = "Log in";
+          authMessage.textContent =
+            "Already signed up in this browser? Log in using your saved details.";
+          authMessage.className = "auth-messages";
+        }
+      }
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const mode = tab.dataset.mode;
+          if (mode && mode !== modeState.current) {
+            setMode(mode);
+          }
+        });
+      });
+
+      function validateForm() {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!email || !password) {
+          showError("Please enter both an email address and password.");
+          return null;
+        }
+
+        if (!email.includes("@") || !email.includes(".")) {
+          showError("Please enter a valid email address.");
+          return null;
+        }
+
+        if (password.length < 6) {
+          showError("Password must be at least 6 characters long.");
+          return null;
+        }
+
+        return { email, password };
+      }
+
+      function showError(message) {
+        authMessage.textContent = message;
+        authMessage.className = "auth-messages error";
+      }
+
+      function showSuccess(message) {
+        authMessage.textContent = message;
+        authMessage.className = "auth-messages success";
+      }
+
+      function getStoredUsers() {
+        try {
+          const raw = localStorage.getItem("tracker-demo-users");
+          if (!raw) return {};
+          const parsed = JSON.parse(raw);
+          return typeof parsed === "object" && parsed ? parsed : {};
+        } catch (e) {
+          return {};
+        }
+      }
+
+      function saveUsers(users) {
+        try {
+          localStorage.setItem("tracker-demo-users", JSON.stringify(users));
+        } catch (e) {
+          console.warn("Unable to save users to localStorage", e);
+        }
+      }
+
+      authForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const data = validateForm();
+        if (!data) return;
+
+        const users = getStoredUsers();
+        const { email, password } = data;
+
+        if (modeState.current === MODE_SIGNUP) {
+          if (users[email]) {
+            showError("An account with this email already exists. Try logging in.");
+            return;
+          }
+
+          users[email] = {
+            password,
+            createdAt: new Date().toISOString(),
+          };
+          saveUsers(users);
+          showSuccess(
+            "Account created locally in your browser. You can now switch to Log in."
+          );
+        } else {
+          if (!users[email]) {
+            showError("No local account found for this email. Try signing up first.");
+            return;
+          }
+
+          if (users[email].password !== password) {
+            showError("Incorrect password for this email address.");
+            return;
+          }
+
+          showSuccess("Logged in (demo-only). Connect this to your backend next!");
+        }
+      });
+
+      function createTrackerRow(name, target) {
+        const li = document.createElement("li");
+        li.className = "tracker-row secondary";
+
+        li.innerHTML = `
+          <div class="tracker-name">
+            <span class="tracker-dot" aria-hidden="true"></span>
+            <div>
+              <div class="tracker-name-main"></div>
+              <div class="tracker-name-sub">Custom · per day</div>
+            </div>
+          </div>
+          <div class="tracker-pill"></div>
+          <div class="tracker-value">0 today</div>
+          <div class="tracker-status-pill">Just added</div>
+        `;
+
+        li.querySelector(".tracker-name-main").textContent =
+          name || "Untitled Tracker";
+        li.querySelector(".tracker-pill").textContent = target || "Goal: —";
+
+        return li;
+      }
+
+      addTrackerButton.addEventListener("click", () => {
+        const name = trackerNameInput.value.trim();
+        const target = trackerTargetInput.value.trim();
+
+        if (!name) {
+          trackerNameInput.focus();
+        }
+
+        if (trackerList) {
+          const row = createTrackerRow(name, target ? "Goal: " + target : "");
+          trackerList.appendChild(row);
+        }
+
+        trackerNameInput.value = "";
+        trackerTargetInput.value = "";
+      });
+
+      // Initialize default mode text
+      setMode(MODE_SIGNUP);
+    </script>
+  </body>
+</html>
+
+
